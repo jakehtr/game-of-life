@@ -64,6 +64,8 @@ class Game:
         self.rect_height = (self.window_height - self.rect_pos_y) / self.col_len - self.rect_pos_y
         self.rects = []
 
+        self.mouse_pos = pygame.mouse.get_pos()
+
         self.play()
 
     def draw_buttons(self):
@@ -113,9 +115,8 @@ class Game:
             self.grid.append(new_row)
 
     def manual_draw(self):
-        mouse = pygame.mouse.get_pos()
         for i in range(len(self.rects)):
-            if self.rects[i].collidepoint(mouse):
+            if self.rects[i].collidepoint(self.mouse_pos):
                 clicked_rect = self.rects[i]
                 grid_x, grid_y = i % len(self.grid[0]), i // len(self.grid[0])
                 cell_state = self.grid[grid_y][grid_x]
@@ -163,11 +164,11 @@ class Game:
                     return
 
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    mouse = pygame.mouse.get_pos()
-                    if mouse[1] > self.window_height:
+                    self.mouse_pos = pygame.mouse.get_pos()
+                    if self.mouse_pos[1] > self.window_height:
                         for name, dimensions in self.buttons.items():
                             x, y, w, h = dimensions
-                            if x + w > mouse[0] > x and y + h > mouse[1] > y:
+                            if x + w > self.mouse_pos[0] > x and y + h > self.mouse_pos[1] > y:
                                 if name == 'Start/Pause':
                                     self.paused = (False if self.paused else True)
                                 elif name == 'Next Life' and self.paused:
@@ -188,8 +189,8 @@ class Game:
                 sleep(0.1)
             else:
                 if pygame.mouse.get_pressed()[0]:
-                    mouse = pygame.mouse.get_pos()
-                    if mouse[0] <= self.window_width and mouse[1] <= self.window_height:
+                    self.mouse_pos = pygame.mouse.get_pos()
+                    if self.mouse_pos[0] <= self.window_width and self.mouse_pos[1] <= self.window_height:
                         self.manual_draw()
 
             pygame.display.update()
@@ -197,5 +198,3 @@ class Game:
 if __name__ == '__main__':
     gui = GameGUI()
     gui.create()
-
-
