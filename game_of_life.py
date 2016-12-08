@@ -27,6 +27,9 @@ class Game:
             print('Error: {}'.format(e))
             return
 
+        self.colours = {'BLACK': (0, 0, 0), 'WHITE': (255, 255, 255), 'GRAY': (125, 125, 125)}
+        self.cell_states = {'0': self.colours['WHITE'], '1': self.colours['BLACK']}
+
         self.max_width, self.max_height = 600, 600
 
         self.paused = True
@@ -54,9 +57,6 @@ class Game:
         self.rect_width = (self.window_width - self.rect_pos_x) / self.row_len - self.rect_pos_x
         self.rect_height = (self.window_height - self.rect_pos_y) / self.col_len - self.rect_pos_y
         self.rects = []
-
-        self.colours = {'BLACK': (0, 0, 0), 'WHITE': (255, 255, 255), 'GRAY': (125, 125, 125)}
-        self.cell_states = {'0': self.colours['WHITE'], '1': self.colours['BLACK']}
 
         self.play()
 
