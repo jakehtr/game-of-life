@@ -189,11 +189,6 @@ class Game:
             pygame.display.update()
 
 if __name__ == '__main__':
-    # BLACK = (0, 0, 0)
-    # WHITE = (255, 255, 255)
-    # GRAY = (125, 125, 125)
-    # cell_states = {'0': WHITE, '1': BLACK}
-
     gui = GameGUI()
     gui.create()
 
