@@ -45,7 +45,7 @@ class GUI:
                     column_index = 0
                     row_index += 1
 
-            self.master.mainloop()
+        self.master.mainloop()
 
     def entries(self):
         return self.all_vars
