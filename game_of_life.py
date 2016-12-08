@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+"""
+game_of_life.py - Takes user inputs from a tkinter gui and uses those inputs to play John Conway's Game Of Life.
+"""
+
 import pygame
 from tkinter import *
 from time import sleep
