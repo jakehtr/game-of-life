@@ -42,7 +42,7 @@ class Game:
         self.window_width = int(self.max_width * min(self.row_len / self.col_len, 1))
         self.window_height = int(self.max_height * min(1, self.col_len / self.row_len))
         self.window_surface = pygame.display.set_mode((self.window_width, self.window_height + self.menu_height), 0, 32)
-        self.window_surface.fill(GRAY)
+        self.window_surface.fill(self.colours['GRAY'])
 
         self.button_names = ['Start/Pause', 'Next Life', 'Start Over', 'Clear', 'Erase/Draw']
         self.button_font = 'arialms'
@@ -55,6 +55,9 @@ class Game:
         self.rect_height = (self.window_height - self.rect_pos_y) / self.col_len - self.rect_pos_y
         self.rects = []
 
+        self.colours = {'BLACK': (0, 0, 0), 'WHITE': (255, 255, 255), 'GRAY': (125, 125, 125)}
+        self.cell_states = {'0': self.colours['WHITE'], '1': self.colours['BLACK']}
+
         self.play()
 
     def draw_buttons(self):
@@ -66,10 +69,10 @@ class Game:
             dimensions = (button_x, button_y, button_w, button_h)
             self.buttons.setdefault(button_name, dimensions)
 
-            pygame.draw.rect(self.window_surface, WHITE, dimensions)
+            pygame.draw.rect(self.window_surface, self.colours['WHITE'], dimensions)
 
             small_text = pygame.font.SysFont(self.button_font, self.button_font_size)
-            text_surface = small_text.render(button_name, True, BLACK)
+            text_surface = small_text.render(button_name, True, self.colours['BLACK'])
             text_rect = text_surface.get_rect()
             text_rect.center = ((button_x + (button_w / 2)), (button_y + (button_h / 2)))
 
@@ -120,7 +123,7 @@ class Game:
 
                     self.grid[grid_y] = ''.join(new_cell_row)
                     self.input_grid[grid_y + 1] = '0' + self.grid[grid_y] + '0'
-                    pygame.draw.rect(self.window_surface, cell_states[new_cell_state], new_rect)
+                    pygame.draw.rect(self.window_surface, self.cell_states[new_cell_state], new_rect)
 
                     self.first_life = list(self.grid)
 
@@ -135,7 +138,7 @@ class Game:
             x_pos = self.rect_pos_x
             for cell in cell_row:
                 rect = pygame.Rect(x_pos, y_pos, self.rect_width, self.rect_height)
-                pygame.draw.rect(self.window_surface, cell_states[cell], rect)
+                pygame.draw.rect(self.window_surface, self.cell_states[cell], rect)
                 self.rects.append(rect)
                 x_pos += self.rect_width + self.rect_pos_x
             y_pos += self.rect_height + self.rect_pos_y
@@ -186,10 +189,10 @@ class Game:
             pygame.display.update()
 
 if __name__ == '__main__':
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    GRAY = (125, 125, 125)
-    cell_states = {'0': WHITE, '1': BLACK}
+    # BLACK = (0, 0, 0)
+    # WHITE = (255, 255, 255)
+    # GRAY = (125, 125, 125)
+    # cell_states = {'0': WHITE, '1': BLACK}
 
     gui = GameGUI()
     gui.create()
