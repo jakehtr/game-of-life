@@ -11,7 +11,6 @@ class GUI:
         self.master.columnconfigure(1, weight=1)
         self.columns = columns - 1
         self.labels = []
-        self.all_vars = []
         self.quit_button = ('Quit', self.master.quit)
         self.buttons = ([] if buttons is None else buttons) + [self.quit_button]
 
@@ -20,14 +19,13 @@ class GUI:
                 var = var()
                 var.set(var_value)
                 self.labels.append((label_name, var))
-                self.all_vars.append(var)
 
     def create(self):
         column_index = 0
         row_index = 0
         if self.labels:
             for label_name, var in self.labels:
-                label = Label(self.master, text='{}'.format(label_name), width=25)
+                label = Label(self.master, text=label_name, width=25)
                 entry = Entry(self.master, width=25, textvariable=var)
 
                 label.grid(row=row_index, sticky=W, pady=5, padx=5)
@@ -36,7 +34,7 @@ class GUI:
                 row_index += 1
         if self.buttons:
             for button_name, command in self.buttons:
-                button = Button(self.master, text='{}'.format(button_name), command=command)
+                button = Button(self.master, text=button_name, command=command)
                 button.grid(row=row_index, column=column_index, sticky=W, pady=5, padx=5)
 
                 column_index += 1
@@ -48,4 +46,8 @@ class GUI:
         self.master.mainloop()
 
     def entries(self):
-        return self.all_vars
+        try:
+            entries = [var.get() for label_name, var in self.labels]
+            return entries
+        except Exception as e:
+            print('GUI error: {}'.format(e))
