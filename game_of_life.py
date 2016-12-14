@@ -18,51 +18,53 @@ class GameGUI(GUI):
         self.title = 'Options'
 
         super().__init__(title=self.title, columns=self.columns, labels=self.labels)
-        self.new_buttons = [('Go!', (lambda e=self.all_vars: Game(e)))]
+        self.new_buttons = [('Go!', (lambda: Game(self.entries())))]
         self.buttons = self.new_buttons + self.buttons
 
 
 class Game:
     def __init__(self, entries):
         try:
-            self.row_len, self.col_len = [var.get() for var in entries]
-            if not all(x > 0 for x in (self.row_len, self.col_len)):
-                print('Error: must enter positive integer')
+            if len(entries) > 2:
+                print('Game error: too many entries!')
                 return
-        except Exception as e:
-            print('Error: {}'.format(e))
+            self.row_len, self.col_len = [ent for ent in entries if ent == int(ent) > 0]
+        except ValueError:
+            print('Game error: invalid entries.')
             return
+
+        pygame.init()
 
         self.colours = {'BLACK': (0, 0, 0), 'WHITE': (255, 255, 255), 'GRAY': (125, 125, 125)}
         self.cell_states = {'0': self.colours['WHITE'], '1': self.colours['BLACK']}
 
-        self.max_width, self.max_height = 600, 600
-
-        self.paused = True
-        self.eraser = False
-
-        self.zero_row = ['0' * (self.row_len + 2)]
-        self.blank_grid = ['0' * self.row_len for i in range(self.col_len)]
+        self.zero_row = ['0' * self.row_len]
+        self.blank_grid = self.zero_row * self.col_len
         self.first_life = list(self.blank_grid)
         self.grid = list(self.blank_grid)
         self.input_grid = self.zero_row + ['0{}0'.format(cell_row) for cell_row in self.grid] + self.zero_row
 
-        self.menu_height = 50
+        self.max_width, self.max_height = 600, 600
         self.window_width = int(self.max_width * min(self.row_len / self.col_len, 1))
         self.window_height = int(self.max_height * min(1, self.col_len / self.row_len))
+        self.menu_height = 50
+        self.background_colour = self.colours['GRAY']
         self.window_surface = pygame.display.set_mode((self.window_width, self.window_height + self.menu_height), 0, 32)
-        self.window_surface.fill(self.colours['GRAY'])
+        self.window_surface.fill(self.background_colour)
 
-        self.button_names = ['Start/Pause', 'Next Life', 'Start Over', 'Clear', 'Erase/Draw']
-        self.button_font = 'arialms'
-        self.button_font_size = 15
-        self.button_space = 10
-        self.buttons = {}
-
-        self.rect_pos_x, self.rect_pos_y = 0.5, 0.5
+        self.rect_pos_x, self.rect_pos_y = 0.75, 0.75
         self.rect_width = (self.window_width - self.rect_pos_x) / self.row_len - self.rect_pos_x
         self.rect_height = (self.window_height - self.rect_pos_y) / self.col_len - self.rect_pos_y
         self.rects = []
+
+        self.button_names = ['Start/Pause', 'Next Life', 'Start Over', 'Clear', 'Erase/Draw']
+        self.button_space = 5
+        self.button_font = 'arialms'
+        self.button_font_size = (self.window_width + self.button_space * (1 + len(self.button_names))) // 40
+        self.buttons = {}
+
+        self.paused = True
+        self.eraser = False
 
         self.mouse_pos = pygame.mouse.get_pos()
 
@@ -124,7 +126,7 @@ class Game:
                 if (cell_state == '1' and self.eraser) or (cell_state == '0' and not self.eraser):
                     rect_x, rect_y = clicked_rect.left, clicked_rect.top
                     new_rect = pygame.Rect(rect_x, rect_y, self.rect_width, self.rect_height)
-                    new_cell_state, = [i for i in ['0', '1'] if i != cell_state]
+                    new_cell_state = ('1' if cell_state == '0' else '0')
                     new_cell_row = list(self.grid[grid_y])
                     new_cell_row[grid_x] = new_cell_state
 
@@ -137,10 +139,10 @@ class Game:
                     return
 
     def draw_cells(self):
-        self.input_grid[1:-1] = ['0{}0'.format(cell) for cell in self.grid]
+        self.input_grid[1:-1] = ['0{}0'.format(cell_row) for cell_row in self.grid]
         self.rects.clear()
-        y_pos = self.rect_pos_y
 
+        y_pos = self.rect_pos_y
         for cell_row in self.grid:
             x_pos = self.rect_pos_x
             for cell in cell_row:
@@ -151,7 +153,6 @@ class Game:
             y_pos += self.rect_height + self.rect_pos_y
 
     def play(self):
-        pygame.init()
         pygame.display.set_caption('Game Of Life')
 
         self.draw_cells()
